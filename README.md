@@ -1,6 +1,6 @@
 # Car Wash Plus
 
-[Escreva um ou dois  parágrafo resumindo o objetivo do seu projeto.]
+Nós somos a CarWash+, aplicativo que tem como objetivo facilitar a interação entre empresas de lavagem automotiva e consumidores, oferecendo várias opções de serviços, empresas e preços que melhor atendem o cliente.
 
 ## Alunos integrantes da equipe
 
