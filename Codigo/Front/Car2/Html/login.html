@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WashCar - Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #00796b;
+            margin: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WashCar - Login</h1>
+        <input type="text" id="cpf" placeholder="CPF" maxlength="11">
+        <input type="password" id="senha" placeholder="Senha">
+        <button onclick="loginUser()">Login</button>
+        <button class="btn-secondary" onclick="redirectToCadastro()">Cadastrar</button>
+    </div>
+
+    <script>
+        const apiUrl = 'https://localhost:44381/api/Usuarios';
+
+        function redirectToCadastro() {
+            window.location.href = 'Usuarios.html';
+        }
+
+        async function loginUser() {
+            const cpf = document.getElementById('cpf').value;
+            const senha = document.getElementById('senha').value;
+
+            if (cpf.length !== 11) {
+                alert('O CPF deve conter 11 dígitos.');
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl);
+                if (response.ok) {
+                    const users = await response.json();
+                    const user = users.find(user => user.cpf === cpf && user.senha === senha);
+                    
+                    if (user) {
+                        localStorage.setItem('usuarioId', user.id);
+                        localStorage.setItem('Name', user.name);
+
+                        alert('Login realizado com sucesso!');
+                        // Redirecionar para a página inicial ou painel do usuário
+                        window.location.href = 'menu.html';
+                    } else {
+                        alert('CPF ou senha incorretos. Tente novamente.');
+                    }
+                } else {
+                    alert('Erro ao buscar usuários. Tente novamente mais tarde.');
+                }
+            } catch (error) {
+                alert('Ocorreu um erro ao realizar o login. Tente novamente mais tarde.');
+            }
+        }
+    </script>
+</body>
+</html>

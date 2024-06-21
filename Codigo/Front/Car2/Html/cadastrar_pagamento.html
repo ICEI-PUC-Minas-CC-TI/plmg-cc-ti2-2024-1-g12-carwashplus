@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WashCar - Cadastrar Pagamento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #00796b;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastrar Pagamento</h1>
+        <input type="text" id="numeroCartao" placeholder="Número do Cartão">
+        <input type="text" id="nomeTitular" placeholder="Nome do Titular">
+        <input type="text" id="validade" placeholder="Validade">
+        <input type="text" id="codigoSeguranca" placeholder="Código de Segurança">
+        <input type="text" id="formaPagamento" placeholder="Forma de Pagamento">
+        <button onclick="cadastrarPagamento()">Cadastrar</button>
+    </div>
+
+    <script>
+        const apiUrlPagamentos = 'https://localhost:44381/api/Pagamentos';
+
+        async function cadastrarPagamento() {
+            const numeroCartao = document.getElementById('numeroCartao').value;
+            const nomeTitular = document.getElementById('nomeTitular').value;
+            const validade = document.getElementById('validade').value;
+            const codigoSeguranca = document.getElementById('codigoSeguranca').value;
+            const formaPagamento = document.getElementById('formaPagamento').value;
+            const usuarioId = localStorage.getItem('usuarioId');
+
+            const response = await fetch(apiUrlPagamentos, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    IdUsuario: parseInt(usuarioId),
+                    NumeroCartao: numeroCartao,
+                    NomeTitular: nomeTitular,
+                    Validade: validade,
+                    CodigoSeguranca: codigoSeguranca,
+                    FormaPagamento: formaPagamento
+                })
+            });
+
+            if (response.ok) {
+            alert('Método de pagamento cadastrado com sucesso');
+            window.location.href = 'menu.html';
+        } else {
+            alert('Erro ao cadastrar método de pagamento');
+        }
+    }
+</script>
+</body>
+</html>

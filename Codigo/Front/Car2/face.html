@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconhecimento Facial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #00796b;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .camera {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        video {
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reconhecimento Facial</h1>
+        <div class="camera">
+            <h2>Verificação Facial</h2>
+            <video id="video" autoplay></video>
+            <button onclick="takeSnapshot()">Tirar Foto</button>
+        </div>
+    </div>
+
+    <script>
+        const faceApiEndpoint = 'https://flopface.cognitiveservices.azure.com/face/v1.0'; // Endpoint da API
+        const faceApiKey = '13cdf4a0139f494b9dc3d7d3c5dd554e'; // Chave da API
+
+        function startVideo() {
+            const video = document.getElementById('video');
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    console.error('Erro ao acessar a câmera: ', err);
+                });
+        }
+
+        async function takeSnapshot() {
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            const blob = await (await fetch(dataUrl)).blob();
+            await verifyFace(blob);
+        }
+
+        async function verifyFace(blob) {
+            const response = await fetch(`${faceApiEndpoint}/detect?returnFaceId=true`, {
+                method: 'POST',
+                headers: {
+                    'Ocp-Apim-Subscription-Key': faceApiKey,
+                    'Content-Type': 'application/octet-stream'
+                },
+                body: blob
+            });
+
+            const data = await response.json();
+            if (data.length > 0) {
+                const faceId = data[0].faceId;
+                alert('Verificação facial bem-sucedida! Face ID: ' + faceId);
+                // Lógica adicional para manipular o faceId pode ser adicionada aqui.
+            } else {
+                alert('Verificação facial falhou. Tente novamente.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', startVideo);
+    </script>
+</body>
+</html>

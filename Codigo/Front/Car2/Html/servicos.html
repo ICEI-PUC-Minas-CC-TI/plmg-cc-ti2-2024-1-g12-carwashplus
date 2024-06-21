@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WashCar - Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #00796b;
+            margin: 0;
+        }
+        .navbar {
+            background-color: #00796b;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+        }
+        .navbar a:hover {
+            background-color: #004d40;
+            border-radius: 5px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+        .empresa-list, .servico-list {
+            margin-top: 20px;
+        }
+        .empresa-list ul, .servico-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .empresa-list li, .servico-list li {
+            padding: 10px;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #e0f7fa;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="selecionar_empresa.html" onclick="removeEmpresaId()">Empresa</a>
+        <a href="menu.html" >Menu</a>
+        <a href="login.html" onclick="logout()">Logout</a>
+        
+    </div>
+    <div class="container">
+        <h1>Serviços</h1>
+        <button onclick="redirectToCadastrarServico()">Cadastrar Novo Serviço</button>
+        <div class="servico-list">
+            <h2>Lista de Serviços</h2>
+            <ul id="servicoList"></ul>
+        </div>
+        <button onclick="finalizarPedido()">Finalizar Pedido</button>
+    </div>
+
+    <script>
+        const apiUrlServicos = 'https://localhost:44381/api/Servicos';
+        const apiUrlUsuarios = 'https://localhost:44381/api/Usuarios';
+        const apiUrlEmpresas = 'https://localhost:44381/api/Empresas';
+
+
+        function logout() {
+            localStorage.removeItem('usuarioId');
+            localStorage.removeItem('empresaId');
+            window.location.href = 'login.html';
+        }
+
+        function redirectToCadastrarServico() {
+            window.location.href = 'cadastrar_servico.html';
+        }
+
+        async function getUsuarioLogado() {
+            const usuarioId = localStorage.getItem('usuarioId');
+            const response = await fetch(apiUrlUsuarios);
+            if (response.ok) {
+                const usuarios = await response.json();
+            }else {
+                    alert('Erro ao obter dados do usuário logado');
+                }
+            }
+        async function getempresaLogada() {
+            const empresaId = localStorage.getItem('empresaId');
+            const response = await fetch(apiUrlEmpresa);
+            if (response.ok) {
+                const usuarios = await response.json();
+                } else {
+                    alert('Erro ao obter dados do usuário logado');
+                }
+            
+        }
+        function removeEmpresaId() {
+            localStorage.removeItem('empresaId');
+        }
+
+
+        async function getServicos() {
+            const response = await fetch(apiUrlServicos);
+            const servicos = await response.json();
+
+            const servicoList = document.getElementById('servicoList');
+            servicoList.innerHTML = '';
+            servicos.forEach(servico => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<input type="checkbox" name="servico" value="${servico.id}"> ${servico.tipo} - Empresa ID: ${servico.idEmpresa} - Usuário ID: ${servico.idUsuario}`;
+                servicoList.appendChild(listItem);
+            });
+        }
+
+        function finalizarPedido() {
+            const checkboxes = document.querySelectorAll('input[name="servico"]:checked');
+            const servicosSelecionados = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+            if (servicosSelecionados.length > 0) {
+                alert('Obrigado pela escolha, volte sempre!!!');
+                console.log('Serviços selecionados:', servicosSelecionados);
+                // Aqui você pode adicionar lógica para enviar os serviços selecionados para o servidor, se necessário.
+            } else {
+                alert('Por favor, selecione pelo menos um serviço.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', getServicos);
+        document.addEventListener('DOMContentLoaded', getUsuarioLogado);
+        document.addEventListener('DOMContentLoaded', getempresaLogada);
+    </script>
+</body>
+</html>

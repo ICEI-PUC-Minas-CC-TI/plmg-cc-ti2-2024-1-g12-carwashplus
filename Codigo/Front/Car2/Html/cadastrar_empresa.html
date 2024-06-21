@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WashCar - Cadastrar Empresa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #00796b;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastrar Empresa</h1>
+        <input type="text" id="cnpj" placeholder="CNPJ" maxlength="14">
+        <input type="text" id="nome" placeholder="Nome da Empresa">
+        <input type="email" id="email" placeholder="Email">
+        <button onclick="cadastrarEmpresa()">Cadastrar</button>
+    </div>
+
+    <script>
+        const apiUrl = 'https://localhost:44381/api/Empresas';
+
+        async function cadastrarEmpresa() {
+            const cnpj = document.getElementById('cnpj').value;
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ CNPJ: cnpj, Nome: nome, Email: email })
+            });
+
+            if (response.ok) {
+                alert('Empresa cadastrada com sucesso');
+                window.location.href = 'selecionar_empresa.html'; // Redireciona para a página de seleção de empresas
+            } else {
+                alert('Erro ao cadastrar empresa');
+            }
+        }
+    </script>
+</body>
+</html>

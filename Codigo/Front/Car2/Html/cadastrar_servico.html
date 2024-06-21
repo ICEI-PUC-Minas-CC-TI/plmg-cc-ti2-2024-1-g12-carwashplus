@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WashCar - Cadastrar Serviço</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #00796b;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastrar Serviço</h1>
+        <input type="text" id="tipo" placeholder="Tipo de Serviço">
+        <button onclick="cadastrarServico()">Cadastrar</button>
+    </div>
+
+    <script>
+        const apiUrlServicos = 'https://localhost:44381/api/Servicos';
+
+
+        
+        async function cadastrarServico() {
+            const tipo = document.getElementById('tipo').value;
+            const empresaId = localStorage.getItem('empresaId');
+            const usuarioId = localStorage.getItem('usuarioId');
+
+            const response = await fetch(apiUrlServicos, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    IdEmpresa: parseInt(empresaId),
+                    IdUsuario: parseInt(usuarioId),
+                    Tipo: tipo
+                })
+            });
+
+            if (response.ok) {
+                alert('Serviço cadastrado com sucesso');
+                window.location.href = 'servicos.html';
+            } else {
+                alert('Erro ao cadastrar serviço');
+            }
+        }
+    </script>
+</body>
+</html>

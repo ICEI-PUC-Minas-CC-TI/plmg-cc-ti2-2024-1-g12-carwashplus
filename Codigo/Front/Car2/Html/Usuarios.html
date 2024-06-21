@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuários</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #00796b;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+        .user-list {
+            margin-top: 20px;
+        }
+        .user-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .user-list li {
+            padding: 10px;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #e0f7fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro de Usuários</h1>
+
+        <div class="form-section">
+            <h2>Criar Usuário</h2>
+            <input type="text" id="cpf" placeholder="CPF" maxlength="11">
+            <input type="text" id="firstName" placeholder="Primeiro Nome">
+            <input type="text" id="lastName" placeholder="Sobrenome">
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="senha" placeholder="Senha">
+            <button onclick="createUser()">Criar</button>
+        </div>
+
+        <div class="user-list">
+            <h2>Lista de Usuários</h2>
+            <button onclick="getUsers()">Atualizar Lista</button>
+            <ul id="userList"></ul>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = 'https://localhost:44381/api/Usuarios';
+
+        async function createUser() {
+            const cpf = document.getElementById('cpf').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+
+            if (cpf.length !== 11) {
+                alert('O CPF deve conter 11 dígitos.');
+                return;
+            }
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ CPF: cpf, PrimeiroNome: firstName, Sobrenome: lastName, Email: email, Senha: senha })
+            });
+
+            if (response.ok) {
+                alert('Usuário criado com sucesso');
+                getUsers(); // Atualiza a lista de usuários após a criação
+            } else {
+                alert('Erro ao criar usuário');
+            }
+        }
+
+        async function getUsers() {
+            const response = await fetch(apiUrl);
+            const users = await response.json();
+
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            users.forEach(user => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${user.cpf} - ${user.primeiroNome} ${user.sobrenome} - ${user.email}`;
+                userList.appendChild(listItem);
+            });
+        }
+
+        // Carrega a lista de usuários ao carregar a página
+        document.addEventListener('DOMContentLoaded', getUsers);
+    </script>
+</body>
+</html>

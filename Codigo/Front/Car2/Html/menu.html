@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WashCar - Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #00796b;
+            margin: 0;
+        }
+        .navbar {
+            background-color: #00796b;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar .user-name {
+            color: white;
+            font-size: 18px;
+            margin-right: auto;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            margin-left: 10px;
+        }
+        .navbar a:hover {
+            background-color: #004d40;
+            border-radius: 5px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px auto;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .columns {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .column {
+            width: 48%;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin-top: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #e0f7fa;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        li:hover {
+            background-color: #b2ebf2;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+        .button-center {
+            width: 300px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <span id="userName" class="user-name"></span>
+        <a href="servicos.html">Serviços</a>
+        <a href="login.html" onclick="logout()">Logout</a>
+    </div>
+    <div class="container">
+        <h1>Menu</h1>
+        <div class="columns">
+            <div class="column">
+                <h2>Opções de Pagamento</h2>
+                <button onclick="redirectToCadastrarPagamento()">Cadastrar Novo Pagamento</button>
+                <ul id="pagamentoList"></ul>
+            </div>
+            <div class="column">
+                <h2>Selecionar Carro</h2>
+                <button onclick="redirectToCadastrarCarro()">Cadastrar Novo Carro</button>
+                <ul id="carroList"></ul>
+            </div>
+        </div>
+        <div class="button-center">
+            <button onclick="redirectToServico()">Serviços</button>
+        </div>
+    </div>
+
+    <script>
+        const apiUrlPagamentos = 'https://localhost:44381/api/Pagamentos';
+        const apiUrlCarros = 'https://localhost:44381/api/Carros';
+        const apiUrlUsuarios = 'https://localhost:44381/api/Usuarios';
+
+        async function getUsuarioLogado() {
+            const usuarioId = localStorage.getItem('usuarioId');
+            const response = await fetch(apiUrlUsuarios);
+            if (response.ok) {
+                const usuarios = await response.json();
+                const usuarioLogado = usuarios.find(user => user.id === parseInt(usuarioId));
+                if (usuarioLogado) {
+                    document.getElementById('userName').textContent = `Bem-vindo, ${usuarioLogado.primeiroNome} ${usuarioLogado.sobrenome}`;
+                } else {
+                    alert('Erro ao obter dados do usuário logado');
+                }
+            } else {
+                alert('Erro ao obter a lista de usuários');
+            }
+        }
+
+        async function getPagamentos() {
+            const response = await fetch(apiUrlPagamentos);
+            const pagamentos = await response.json();
+
+            const pagamentoList = document.getElementById('pagamentoList');
+            pagamentoList.innerHTML = '';
+            pagamentos.forEach(pagamento => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<input type="checkbox" name="pagamento" value="${pagamento.Id}"> ${pagamento.formaPagamento} - ${pagamento.numeroCartao}`;
+                pagamentoList.appendChild(listItem);
+            });
+        }
+
+        async function getCarros() {
+            const response = await fetch(apiUrlCarros);
+            const carros = await response.json();
+
+            const carroList = document.getElementById('carroList');
+            carroList.innerHTML = '';
+            carros.forEach(carro => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<input type="checkbox" name="carro" value="${carro.Id}"> ${carro.placa} - ${carro.marca} ${carro.modelo} - ${carro.cor}`;
+                carroList.appendChild(listItem);
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('usuarioId');
+            window.location.href = 'login.html';
+        }
+
+        function redirectToCadastrarPagamento() {
+            window.location.href = 'cadastrar_pagamento.html';
+        }
+
+        function redirectToCadastrarCarro() {
+            window.location.href = 'cadastrar_carro.html';
+        }
+
+        function redirectToServico() {
+            window.location.href = 'servicos.html';
+        }
+
+        function finalizarPedido() {
+            const checkboxes = document.querySelectorAll('input[name="servico"]:checked');
+            const servicosSelecionados = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+            if (servicosSelecionados.length > 0) {
+                alert('Obrigado pela escolha, volte sempre!!!');
+                console.log('Serviços selecionados:', servicosSelecionados);
+                // Aqui você pode adicionar lógica para enviar os serviços selecionados para o servidor, se necessário.
+            } else {
+                alert('Por favor, selecione pelo menos um serviço.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await getUsuarioLogado();
+            await getPagamentos();
+            await getCarros();
+        });
+    </script>
+</body>
+</html>

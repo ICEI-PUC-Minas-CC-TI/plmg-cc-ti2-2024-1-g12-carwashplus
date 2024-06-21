@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WashCar - Selecionar Empresa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #00796b;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+        .empresa-list {
+            margin-top: 20px;
+        }
+        .empresa-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .empresa-list li {
+            padding: 10px;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #e0f7fa;
+            cursor: pointer;
+        }
+        .empresa-list li:hover {
+            background-color: #b2ebf2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Selecionar Empresa</h1>
+        <button onclick="redirectToCadastro()">Cadastrar Nova Empresa</button>
+        <div class="empresa-list">
+            <h2>Lista de Empresas</h2>
+            <ul id="empresaList"></ul>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = 'https://localhost:44381/api/Empresas';
+
+        async function getEmpresas() {
+            const response = await fetch(apiUrl);
+            const empresas = await response.json();
+
+            const empresaList = document.getElementById('empresaList');
+            empresaList.innerHTML = '';
+            empresas.forEach(empresa => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${empresa.cnpj} - ${empresa.nome} - ${empresa.email}`;
+                listItem.onclick = () => selecionarEmpresa(empresa.id);
+                empresaList.appendChild(listItem);
+            });
+        }
+
+        function selecionarEmpresa(idEmpresa) {
+            // Redirecionar para menu.html ou outra ação desejada
+            localStorage.setItem('empresaId', idEmpresa);
+            window.location.href = `servicos.html?idEmpresa=${idEmpresa}`;
+        }
+
+        function redirectToCadastro() {
+            window.location.href = 'cadastrar_empresa.html';
+        }
+
+        // Carrega a lista de empresas ao carregar a página
+        document.addEventListener('DOMContentLoaded', getEmpresas);
+    </script>
+</body>
+</html>

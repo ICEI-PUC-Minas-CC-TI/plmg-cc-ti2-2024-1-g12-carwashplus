@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WashCar - Cadastrar Carro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #00796b;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastrar Carro</h1>
+        <input type="text" id="placa" placeholder="Placa">
+        <input type="text" id="marca" placeholder="Marca">
+        <input type="text" id="modelo" placeholder="Modelo">
+        <input type="text" id="cor" placeholder="Cor">
+        <button onclick="cadastrarCarro()">Cadastrar</button>
+    </div>
+
+    <script>
+        const apiUrlCarros = 'https://localhost:44381/api/Carros';
+        const apiUrlUsuarios = 'https://localhost:44381/api/Usuarios';
+
+        async function getUsuarioLogado() {
+            const usuarioId = localStorage.getItem('usuarioId');
+            const response = await fetch(apiUrlUsuarios);
+            if (response.ok) {
+                return await response.json();
+            } else {
+                alert('Erro ao obter dados do usuário logado');
+                return null;
+            }
+        }
+
+
+
+
+        async function cadastrarCarro() {
+            const placa = document.getElementById('placa').value;
+            const marca = document.getElementById('marca').value;
+            const modelo = document.getElementById('modelo').value;
+            const cor = document.getElementById('cor').value;
+            const usuarioId = localStorage.getItem('usuarioId');
+
+            const usuarioLogado = await getUsuarioLogado();
+            if (!usuarioLogado) return;
+
+            const dono = `${usuarioLogado.PrimeiroNome} ${usuarioLogado.Sobrenome}`;
+
+            const response = await fetch(apiUrlCarros, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    IdUsuario: parseInt(usuarioId),
+                    Placa: placa,
+                    Marca: marca,
+                    Modelo: modelo,
+                    Cor: cor,
+                    Dono: dono
+                })
+            });
+
+            if (response.ok) {
+                alert('Carro cadastrado com sucesso');
+                window.location.href = 'menu.html';
+            } else {
+                alert('Erro ao cadastrar carro');
+            }
+        }
+    </script>
+</body>
+</html>

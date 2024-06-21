@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Usuários</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            margin: 5px 0;
+            padding: 10px;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        .user-list {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gerenciamento de Usuários</h1>
+
+    <div class="form-section">
+        <h2>Criar Usuário</h2>
+        <input type="text" id="cpf" placeholder="CPF" maxlength="11">
+        <input type="text" id="firstName" placeholder="Primeiro Nome">
+        <input type="text" id="lastName" placeholder="Sobrenome">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="senha" placeholder="Senha">
+        <button onclick="createUser()">Criar</button>
+    </div>
+
+    <div class="form-section">
+        <h2>Buscar Usuário</h2>
+        <input type="text" id="searchCpf" placeholder="CPF">
+        <button onclick="getUser()">Buscar</button>
+        <pre id="userDetails"></pre>
+    </div>
+
+
+    <div class="user-list">
+        <h2>Lista de Usuários</h2>
+        <button onclick="getUsers()">Atualizar Lista</button>
+        <ul id="userList"></ul>
+    </div>
+
+    <script>
+        const apiUrl = 'https://localhost:44381/api/Usuarios';
+
+        async function createUser() {
+            const cpf = document.getElementById('cpf').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ CPF: cpf, PrimeiroNome: firstName, Sobrenome: lastName, Email: email, Senha: senha })
+            });
+
+            if (response.ok) {
+                alert('Usuário criado com sucesso');
+            } else {
+                alert('Erro ao criar usuário');
+            }
+        }
+
+        async function getUser() {
+            const cpf = document.getElementById('searchCpf').value;
+            const response = await fetch(`${apiUrl}/${cpf}`);
+
+            if (response.ok) {
+                const user = await response.json();
+                document.getElementById('userDetails').textContent = JSON.stringify(user, null, 2);
+            } else {
+                alert('Usuário não encontrado');
+            }
+        }
+
+        
+
+        async function getUsers() {
+            const response = await fetch(apiUrl);
+            const users = await response.json();
+
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            users.forEach(user => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${user.cpf} - ${user.primeiroNome} ${user.sobrenome} - ${user.email}`;
+                userList.appendChild(listItem);
+            });
+        }
+    </script>
+</body>
+</html>
